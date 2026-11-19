@@ -1,0 +1,937 @@
+{
+  "nodes": [
+    {
+      "id": "n1",
+      "label": "Artificial intelligence",
+      "type": "concept"
+    },
+    {
+      "id": "n2",
+      "label": "Symbolic AI",
+      "type": "concept"
+    },
+    {
+      "id": "n3",
+      "label": "Logical rules",
+      "type": "concept"
+    },
+    {
+      "id": "n4",
+      "label": "Expert system",
+      "type": "concept"
+    },
+    {
+      "id": "n5",
+      "label": "Knowledge base",
+      "type": "concept"
+    },
+    {
+      "id": "n6",
+      "label": "Agent",
+      "type": "concept"
+    },
+    {
+      "id": "n7",
+      "label": "Rational agent",
+      "type": "concept"
+    },
+    {
+      "id": "n8",
+      "label": "Performance measure",
+      "type": "concept"
+    },
+    {
+      "id": "n9",
+      "label": "Sensors",
+      "type": "concept"
+    },
+    {
+      "id": "n10",
+      "label": "Actuators",
+      "type": "concept"
+    },
+    {
+      "id": "n11",
+      "label": "Breadth-first search",
+      "type": "concept"
+    },
+    {
+      "id": "n12",
+      "label": "Depth-first search",
+      "type": "concept"
+    },
+    {
+      "id": "n13",
+      "label": "Uninformed search",
+      "type": "concept"
+    },
+    {
+      "id": "n14",
+      "label": "Informed search",
+      "type": "concept"
+    },
+    {
+      "id": "n15",
+      "label": "A* search",
+      "type": "concept"
+    },
+    {
+      "id": "n16",
+      "label": "Heuristic function",
+      "type": "concept"
+    },
+    {
+      "id": "n17",
+      "label": "Reinforcement learning",
+      "type": "concept"
+    },
+    {
+      "id": "n18",
+      "label": "Reward",
+      "type": "concept"
+    },
+    {
+      "id": "n19",
+      "label": "Markov decision process",
+      "type": "concept"
+    },
+    {
+      "id": "n20",
+      "label": "Q-learning",
+      "type": "concept"
+    },
+    {
+      "id": "n21",
+      "label": "Q-value function",
+      "type": "concept"
+    },
+    {
+      "id": "n22",
+      "label": "Bellman equation",
+      "type": "concept"
+    },
+    {
+      "id": "n23",
+      "label": "Value iteration",
+      "type": "concept"
+    },
+    {
+      "id": "n24",
+      "label": "Neural network",
+      "type": "concept"
+    },
+    {
+      "id": "n25",
+      "label": "Actor-critic algorithm",
+      "type": "concept"
+    },
+    {
+      "id": "n26",
+      "label": "Policy gradients",
+      "type": "concept"
+    },
+    {
+      "id": "n27",
+      "label": "Large language model",
+      "type": "concept"
+    },
+    {
+      "id": "n28",
+      "label": "Agentic AI",
+      "type": "concept"
+    },
+    {
+      "id": "n29",
+      "label": "LLM-based multi-agent system",
+      "type": "concept"
+    },
+    {
+      "id": "n30",
+      "label": "Planning",
+      "type": "concept"
+    },
+    {
+      "id": "n31",
+      "label": "Memory",
+      "type": "concept"
+    },
+    {
+      "id": "n32",
+      "label": "Constraint satisfaction problem",
+      "type": "concept"
+    },
+    {
+      "id": "n33",
+      "label": "CSP variables",
+      "type": "concept"
+    },
+    {
+      "id": "n34",
+      "label": "CSP domains",
+      "type": "concept"
+    },
+    {
+      "id": "n35",
+      "label": "Constraints",
+      "type": "concept"
+    },
+    {
+      "id": "n36",
+      "label": "Decision tree",
+      "type": "concept"
+    },
+    {
+      "id": "n37",
+      "label": "ID3",
+      "type": "concept"
+    },
+    {
+      "id": "n38",
+      "label": "Entropy",
+      "type": "concept"
+    },
+    {
+      "id": "n39",
+      "label": "Information gain",
+      "type": "concept"
+    },
+    {
+      "id": "n40",
+      "label": "Tree-of-thought reasoning",
+      "type": "concept"
+    },
+    {
+      "id": "n41",
+      "label": "Chain-of-thought prompting",
+      "type": "concept"
+    },
+    {
+      "id": "n42",
+      "label": "Local search",
+      "type": "concept"
+    },
+    {
+      "id": "n43",
+      "label": "Hill climbing",
+      "type": "concept"
+    },
+    {
+      "id": "n44",
+      "label": "Simulated annealing",
+      "type": "concept"
+    },
+    {
+      "id": "n45",
+      "label": "Genetic algorithm",
+      "type": "concept"
+    },
+    {
+      "id": "n46",
+      "label": "Crossover",
+      "type": "concept"
+    },
+    {
+      "id": "n47",
+      "label": "Mutation",
+      "type": "concept"
+    },
+    {
+      "id": "n48",
+      "label": "Objective function",
+      "type": "concept"
+    },
+    {
+      "id": "n49",
+      "label": "Machine learning",
+      "type": "concept"
+    },
+    {
+      "id": "n50",
+      "label": "Supervised learning",
+      "type": "concept"
+    },
+    {
+      "id": "n51",
+      "label": "Unsupervised learning",
+      "type": "concept"
+    },
+    {
+      "id": "n52",
+      "label": "Regression",
+      "type": "concept"
+    },
+    {
+      "id": "n53",
+      "label": "Linear regression",
+      "type": "concept"
+    },
+    {
+      "id": "n54",
+      "label": "Logistic regression",
+      "type": "concept"
+    },
+    {
+      "id": "n55",
+      "label": "Sigmoid function",
+      "type": "concept"
+    },
+    {
+      "id": "n56",
+      "label": "Clustering",
+      "type": "concept"
+    },
+    {
+      "id": "n57",
+      "label": "K-means clustering",
+      "type": "concept"
+    },
+    {
+      "id": "n58",
+      "label": "Sum of squared errors",
+      "type": "concept"
+    },
+    {
+      "id": "n59",
+      "label": "Elbow method",
+      "type": "concept"
+    },
+    {
+      "id": "n60",
+      "label": "Artificial neuron",
+      "type": "concept"
+    },
+    {
+      "id": "n61",
+      "label": "Activation function",
+      "type": "concept"
+    },
+    {
+      "id": "n62",
+      "label": "Gradient descent",
+      "type": "concept"
+    },
+    {
+      "id": "n63",
+      "label": "Convolutional neural network",
+      "type": "concept"
+    },
+    {
+      "id": "n64",
+      "label": "Convolutional layer",
+      "type": "concept"
+    },
+    {
+      "id": "n65",
+      "label": "Pooling layer",
+      "type": "concept"
+    },
+    {
+      "id": "n66",
+      "label": "Recurrent neural network",
+      "type": "concept"
+    },
+    {
+      "id": "n67",
+      "label": "Bayesian network",
+      "type": "concept"
+    },
+    {
+      "id": "n68",
+      "label": "Conditional probability table",
+      "type": "concept"
+    },
+    {
+      "id": "n69",
+      "label": "Transformer",
+      "type": "concept"
+    },
+    {
+      "id": "n70",
+      "label": "Language modeling",
+      "type": "concept"
+    }
+  ],
+  "edges": [
+    {
+      "source": "n2",
+      "relation": "is_a",
+      "target": "n1",
+      "source_id": "W02-P008",
+      "evidence": "AI systems that represent knowledge as symbols and manipulate them with"
+    },
+    {
+      "source": "n2",
+      "relation": "uses",
+      "target": "n3",
+      "source_id": "W02-P009",
+      "evidence": "In symbolic AI, an agent reasons using symbols (logic, rules, representations)."
+    },
+    {
+      "source": "n4",
+      "relation": "uses",
+      "target": "n3",
+      "source_id": "W01-P018",
+      "evidence": "Reasoning by logical rules that are derived\nfrom the knowledge of experts"
+    },
+    {
+      "source": "n4",
+      "relation": "uses",
+      "target": "n5",
+      "source_id": "W02-P012",
+      "evidence": "An expert system is software that uses a knowledge base of"
+    },
+    {
+      "source": "n4",
+      "relation": "part_of",
+      "target": "n1",
+      "source_id": "W02-P012",
+      "evidence": "and are a traditional application and/or subfield of artificial\nintelligence (AI)."
+    },
+    {
+      "source": "n4",
+      "relation": "is_a",
+      "target": "n2",
+      "source_id": "W03-P004",
+      "evidence": "Symbolic agent stage: symbolic agent approaches employ logical rules and symbolic\n❑\nrepresentations to encapsulate knowledge and facilitate reasoning processes.\nA classic example of this approach is knowledge-based expert systems."
+    },
+    {
+      "source": "n5",
+      "relation": "part_of",
+      "target": "n4",
+      "source_id": "W02-P013",
+      "evidence": "Components:\nn\nProblem data stored as facts.\nq\n“Reason” using IF…THEN…ELSE rules.\nq\nRule Base (knowledge base)"
+    },
+    {
+      "source": "n6",
+      "relation": "uses",
+      "target": "n9",
+      "source_id": "W02-P020",
+      "evidence": "Agent = anything that perceives its environment through sensors"
+    },
+    {
+      "source": "n6",
+      "relation": "uses",
+      "target": "n10",
+      "source_id": "W02-P020",
+      "evidence": "acts upon that\nenvironment with actuators."
+    },
+    {
+      "source": "n7",
+      "relation": "is_a",
+      "target": "n6",
+      "source_id": "W02-P023",
+      "evidence": "A rational agent is an agent that perceives its environment and and behaves rationally"
+    },
+    {
+      "source": "n7",
+      "relation": "optimizes",
+      "target": "n8",
+      "source_id": "W02-P023",
+      "evidence": "chooses actions that maximise its expected performance measure given what it"
+    },
+    {
+      "source": "n11",
+      "relation": "is_a",
+      "target": "n13",
+      "source_id": "W03-P003",
+      "evidence": "Uninformed search - Breadth-first Search and Depth-first Search"
+    },
+    {
+      "source": "n12",
+      "relation": "is_a",
+      "target": "n13",
+      "source_id": "W03-P003",
+      "evidence": "Uninformed search - Breadth-first Search and Depth-first Search"
+    },
+    {
+      "source": "n15",
+      "relation": "is_a",
+      "target": "n14",
+      "source_id": "W03-P003",
+      "evidence": "Informed search - A* search"
+    },
+    {
+      "source": "n15",
+      "relation": "uses",
+      "target": "n16",
+      "source_id": "W02-P045",
+      "evidence": "Evaluation function: f(n) = g(n) + h(n)."
+    },
+    {
+      "source": "n14",
+      "relation": "uses",
+      "target": "n16",
+      "source_id": "W02-P044",
+      "evidence": "Heuristic information represents the relative suitability of a solution among its peers based\nq\non the intuition, experience or common sense"
+    },
+    {
+      "source": "n17",
+      "relation": "optimizes",
+      "target": "n18",
+      "source_id": "W03-P011",
+      "evidence": "Goal: Learn how to take actions in order to\n◼\nmaximize reward"
+    },
+    {
+      "source": "n17",
+      "relation": "uses",
+      "target": "n19",
+      "source_id": "W03-P015",
+      "evidence": "Markov Decision Process: Mathematical formulation of the RL\n◼\nproblem"
+    },
+    {
+      "source": "n6",
+      "relation": "trained_by",
+      "target": "n17",
+      "source_id": "W03-P005",
+      "evidence": "reinforcement learning-based agents utilize\n❑\nreinforcement learning methods to train agents to learn through interactions with their\nenvironments"
+    },
+    {
+      "source": "n20",
+      "relation": "predicts",
+      "target": "n21",
+      "source_id": "W03-P024",
+      "evidence": "Q-learning: Use a function approximator to estimate the action-\n◼\nvalue function"
+    },
+    {
+      "source": "n20",
+      "relation": "uses",
+      "target": "n24",
+      "source_id": "W03-P024",
+      "evidence": "Scalability Solution: use a function approximator to estimate\n◼\nQ(s, a). e.g. a neural network!"
+    },
+    {
+      "source": "n23",
+      "relation": "uses",
+      "target": "n22",
+      "source_id": "W03-P023",
+      "evidence": "Value iteration algorithm: Use Bellman equation as an iterative update"
+    },
+    {
+      "source": "n23",
+      "relation": "optimizes",
+      "target": "n21",
+      "source_id": "W03-P023",
+      "evidence": "Qi will converge to Q* as i -> infinity"
+    },
+    {
+      "source": "n25",
+      "relation": "uses",
+      "target": "n20",
+      "source_id": "W03-P029",
+      "evidence": "Yes, using Q-learning! We can combine Policy Gradients and Q-learning"
+    },
+    {
+      "source": "n25",
+      "relation": "uses",
+      "target": "n26",
+      "source_id": "W03-P029",
+      "evidence": "Yes, using Q-learning! We can combine Policy Gradients and Q-learning"
+    },
+    {
+      "source": "n25",
+      "relation": "uses",
+      "target": "n21",
+      "source_id": "W03-P029",
+      "evidence": "By training both an actor (the policy) and a critic (the Q-function)"
+    },
+    {
+      "source": "n6",
+      "relation": "uses",
+      "target": "n27",
+      "source_id": "W03-P006",
+      "evidence": "Large language model-based agent stage: employ large language model as the primary component of brain or\n❑\ncontroller of agents."
+    },
+    {
+      "source": "n6",
+      "relation": "part_of",
+      "target": "n28",
+      "source_id": "W03-P034",
+      "evidence": "Essentially, agentic AI is the framework; AI agents are the building\nblocks within the framework."
+    },
+    {
+      "source": "n28",
+      "relation": "uses",
+      "target": "n49",
+      "source_id": "W03-P036",
+      "evidence": "Many agentic AI systems employ\nmachine learning or reinforcement\nlearning techniques to improve\ntheir performance over time."
+    },
+    {
+      "source": "n28",
+      "relation": "uses",
+      "target": "n17",
+      "source_id": "W03-P036",
+      "evidence": "Many agentic AI systems employ\nmachine learning or reinforcement\nlearning techniques to improve\ntheir performance over time."
+    },
+    {
+      "source": "n30",
+      "relation": "part_of",
+      "target": "n6",
+      "source_id": "W03-P006",
+      "evidence": "Planning: The planning capability defines an LLM-based agent’s\n◼\nability to devise action sequences based on set objectives"
+    },
+    {
+      "source": "n31",
+      "relation": "part_of",
+      "target": "n6",
+      "source_id": "W03-P050",
+      "evidence": "Agent’s Memory"
+    },
+    {
+      "source": "n29",
+      "relation": "uses",
+      "target": "n27",
+      "source_id": "W04-P025",
+      "evidence": "Specialize LLMs into agents with diverse capabilities that can perform specific tasks"
+    },
+    {
+      "source": "n29",
+      "relation": "uses",
+      "target": "n30",
+      "source_id": "W04-P025",
+      "evidence": "Multi-agent planning and task decomposition\n• Global planning, local planning"
+    },
+    {
+      "source": "n29",
+      "relation": "uses",
+      "target": "n31",
+      "source_id": "W04-P025",
+      "evidence": "Multi-agent memory management\n• Long-term memory, short-term memory,…"
+    },
+    {
+      "source": "n33",
+      "relation": "part_of",
+      "target": "n32",
+      "source_id": "W04-P005",
+      "evidence": "CSP consists of three components\n• A set of variables, a set of domains, a set of constrains"
+    },
+    {
+      "source": "n34",
+      "relation": "part_of",
+      "target": "n32",
+      "source_id": "W04-P005",
+      "evidence": "CSP consists of three components\n• A set of variables, a set of domains, a set of constrains"
+    },
+    {
+      "source": "n35",
+      "relation": "part_of",
+      "target": "n32",
+      "source_id": "W04-P005",
+      "evidence": "CSP consists of three components\n• A set of variables, a set of domains, a set of constrains"
+    },
+    {
+      "source": "n36",
+      "relation": "trained_by",
+      "target": "n37",
+      "source_id": "W05-P016",
+      "evidence": "Iterative Dichotomiser 3 (ID3)\nIteratively construct the nodes in the decision tree:"
+    },
+    {
+      "source": "n37",
+      "relation": "uses",
+      "target": "n38",
+      "source_id": "W05-P013",
+      "evidence": "Iterative Dichotomiser 3 (ID3)\nThe overall data Entropy:"
+    },
+    {
+      "source": "n37",
+      "relation": "uses",
+      "target": "n39",
+      "source_id": "W05-P017",
+      "evidence": "Iterative Dichotomiser 3 (ID3)\n• Pros:\n• Intuitive, easy to implement\n• Cons:\n• Continuous Features?\n• Calculation of Information Gain?"
+    },
+    {
+      "source": "n39",
+      "relation": "uses",
+      "target": "n38",
+      "source_id": "W05-P013",
+      "evidence": "Gain(Decision, Wind)\n= Entropy(Decision) – ∑ [ p(Decision|Wind) *Entropy(Decision|Wind) ]"
+    },
+    {
+      "source": "n40",
+      "relation": "uses",
+      "target": "n11",
+      "source_id": "W05-P020",
+      "evidence": "ToT performs local branch exploration at each intermediate\nstate and uses a global BFS/DFS strategy for lookahead and backtracking"
+    },
+    {
+      "source": "n40",
+      "relation": "uses",
+      "target": "n12",
+      "source_id": "W05-P020",
+      "evidence": "ToT performs local branch exploration at each intermediate\nstate and uses a global BFS/DFS strategy for lookahead and backtracking"
+    },
+    {
+      "source": "n40",
+      "relation": "contrasts_with",
+      "target": "n41",
+      "source_id": "W05-P020",
+      "evidence": "Compared to traditional chained thought (CoT), ToT performs local branch exploration at each intermediate\nstate and uses a global BFS/DFS strategy for lookahead and backtracking"
+    },
+    {
+      "source": "n36",
+      "relation": "is_a",
+      "target": "n49",
+      "source_id": "W05-P006",
+      "evidence": "Machine Learning Model that\nsimulates Expert Systems"
+    },
+    {
+      "source": "n42",
+      "relation": "optimizes",
+      "target": "n48",
+      "source_id": "W06-P004",
+      "evidence": "Moves continuously in the direction of increasing objective"
+    },
+    {
+      "source": "n43",
+      "relation": "is_a",
+      "target": "n42",
+      "source_id": "W06-P007",
+      "evidence": "Also called greedy local search"
+    },
+    {
+      "source": "n43",
+      "relation": "optimizes",
+      "target": "n16",
+      "source_id": "W06-P007",
+      "evidence": "Value can be either\n❑ Objective function value\n❑ Heuristic function value (minimized)"
+    },
+    {
+      "source": "n43",
+      "relation": "optimizes",
+      "target": "n48",
+      "source_id": "W06-P007",
+      "evidence": "“a loop that continuously moves towards increasing value”\n❑ terminates when a peak is reached\n❑ Also called greedy local search\n▪ Value can be either\n❑ Objective function value"
+    },
+    {
+      "source": "n44",
+      "relation": "optimizes",
+      "target": "n48",
+      "source_id": "W06-P022",
+      "evidence": "Note: this algorithm is maximizing the objective function"
+    },
+    {
+      "source": "n45",
+      "relation": "uses",
+      "target": "n46",
+      "source_id": "W06-P026",
+      "evidence": "use\ntechniques inspired by evolutionary biology such as\ninheritance, mutation, selection, and crossover"
+    },
+    {
+      "source": "n45",
+      "relation": "uses",
+      "target": "n47",
+      "source_id": "W06-P026",
+      "evidence": "use\ntechniques inspired by evolutionary biology such as\ninheritance, mutation, selection, and crossover"
+    },
+    {
+      "source": "n45",
+      "relation": "uses",
+      "target": "n48",
+      "source_id": "W06-P030",
+      "evidence": "Evaluation function (objective/fitness function):\n❑ Higher values for better states."
+    },
+    {
+      "source": "n49",
+      "relation": "part_of",
+      "target": "n1",
+      "source_id": "W07-P003",
+      "evidence": "Machine Learning\nAlways mixed with AI and Deep Learning nowadays\n◼\nDefinition\n◼\nA branch of artificial intelligence"
+    },
+    {
+      "source": "n50",
+      "relation": "is_a",
+      "target": "n49",
+      "source_id": "W07-P003",
+      "evidence": "According to the feedback from environment\n◼\nUnsupervised learning\n❑\nSupervised learning\n❑\nReinforcement learning"
+    },
+    {
+      "source": "n51",
+      "relation": "is_a",
+      "target": "n49",
+      "source_id": "W07-P003",
+      "evidence": "According to the feedback from environment\n◼\nUnsupervised learning\n❑\nSupervised learning\n❑\nReinforcement learning"
+    },
+    {
+      "source": "n17",
+      "relation": "is_a",
+      "target": "n49",
+      "source_id": "W07-P003",
+      "evidence": "According to the feedback from environment\n◼\nUnsupervised learning\n❑\nSupervised learning\n❑\nReinforcement learning"
+    },
+    {
+      "source": "n52",
+      "relation": "is_a",
+      "target": "n50",
+      "source_id": "W03-P009",
+      "evidence": "Past paradigm: Supervised Learning\n◼\nData: (x, y)\n◼\nx is data, y is label\n❑\nGoal: Learn a function to map x -> y\n◼\nExamples: Classification, regression"
+    },
+    {
+      "source": "n53",
+      "relation": "optimizes",
+      "target": "n58",
+      "source_id": "W07-P013",
+      "evidence": "Minimizes sum of square residuals"
+    },
+    {
+      "source": "n54",
+      "relation": "contrasts_with",
+      "target": "n53",
+      "source_id": "W07-P038",
+      "evidence": "A key difference from linear regression is that\nthe output value being modeled is a binary\nvalues (0 or 1) rather than a numeric value."
+    },
+    {
+      "source": "n54",
+      "relation": "uses",
+      "target": "n55",
+      "source_id": "W07-P035",
+      "evidence": "Logistic regression is named for the function used at the\ncore of the method: logistic function."
+    },
+    {
+      "source": "n56",
+      "relation": "is_a",
+      "target": "n51",
+      "source_id": "W07-P057",
+      "evidence": "Clustering\nClustering\n◼\nPartition a given dataset into groups based on specified\n❑\nfeatures so that the data points within a group are more\nsimilar to each other than the points in different groups\nA typical unsupervised learning problem"
+    },
+    {
+      "source": "n57",
+      "relation": "is_a",
+      "target": "n56",
+      "source_id": "W07-P080",
+      "evidence": "To analyze similar customers, we can make use of\nK-mean clustering ."
+    },
+    {
+      "source": "n57",
+      "relation": "optimizes",
+      "target": "n58",
+      "source_id": "W07-P058",
+      "evidence": "so as to minimize\nthe within-cluster sum of squares:"
+    },
+    {
+      "source": "n59",
+      "relation": "uses",
+      "target": "n58",
+      "source_id": "W07-P082",
+      "evidence": "First of all, compute the sum of squared error\n(SSE) for some values of k"
+    },
+    {
+      "source": "n57",
+      "relation": "uses",
+      "target": "n59",
+      "source_id": "W07-P086",
+      "evidence": "K-means clustering needs the number of\nclusters to be specified.\n▪ Although elbow method can be used"
+    },
+    {
+      "source": "n60",
+      "relation": "part_of",
+      "target": "n24",
+      "source_id": "W08-P002",
+      "evidence": "A neural net consists of a large number of simple\nprocessing elements called neurons, units, cells or\nnodes."
+    },
+    {
+      "source": "n61",
+      "relation": "part_of",
+      "target": "n60",
+      "source_id": "W08-P007",
+      "evidence": "An artificial neuron has two components:\n❑ weighted sum and\n❑ activation function."
+    },
+    {
+      "source": "n55",
+      "relation": "is_a",
+      "target": "n61",
+      "source_id": "W08-P007",
+      "evidence": "Variety of activation functions: Sigmoid, ReLU, etc."
+    },
+    {
+      "source": "n24",
+      "relation": "trained_by",
+      "target": "n62",
+      "source_id": "W08-P005",
+      "evidence": "Approach: Gradient descent (stochastic gradient descent, batch\ngradient descent, mini-batch gradient descent)."
+    },
+    {
+      "source": "n63",
+      "relation": "is_a",
+      "target": "n24",
+      "source_id": "W09-P011",
+      "evidence": "Convolutional Neural Networks are a powerful\nartificial neural network technique."
+    },
+    {
+      "source": "n64",
+      "relation": "part_of",
+      "target": "n63",
+      "source_id": "W09-P012",
+      "evidence": "There are three types of layers in a\nConvolutional Neural Network:\n❑Convolutional Layers.\n❑Pooling Layers.\n❑Fully-Connected Layers."
+    },
+    {
+      "source": "n65",
+      "relation": "part_of",
+      "target": "n63",
+      "source_id": "W09-P012",
+      "evidence": "There are three types of layers in a\nConvolutional Neural Network:\n❑Convolutional Layers.\n❑Pooling Layers.\n❑Fully-Connected Layers."
+    },
+    {
+      "source": "n66",
+      "relation": "is_a",
+      "target": "n24",
+      "source_id": "W10-P004",
+      "evidence": "RNN is a type of artificial neural network designed specifically to work with sequential\ndata"
+    },
+    {
+      "source": "n66",
+      "relation": "uses",
+      "target": "n31",
+      "source_id": "W10-P004",
+      "evidence": "Its defining feature is a form of memory, which allows it to use information from previous\nsteps in the sequence to influence the current output."
+    },
+    {
+      "source": "n67",
+      "relation": "uses",
+      "target": "n68",
+      "source_id": "W10-P021",
+      "evidence": "Bayesian Network\n• A directed acyclic graph\n• A Conditional Probability Table for each Node"
+    },
+    {
+      "source": "n27",
+      "relation": "trained_by",
+      "target": "n70",
+      "source_id": "W11-P005",
+      "evidence": "Language modeling is the meta task of pre-training large language models"
+    },
+    {
+      "source": "n69",
+      "relation": "uses",
+      "target": "n24",
+      "source_id": "W11-P011",
+      "evidence": "Applying the same feedforward network to each self-\nattention output"
+    },
+    {
+      "source": "n66",
+      "relation": "uses",
+      "target": "n61",
+      "source_id": "W11-P010",
+      "evidence": "RNN has the non-linear activation functions"
+    },
+    {
+      "source": "n41",
+      "relation": "uses",
+      "target": "n27",
+      "source_id": "W11-P026",
+      "evidence": "Chain-of-thought (CoT) Prompting: Investigating the reasoning ability of LLMs"
+    },
+    {
+      "source": "n27",
+      "relation": "trained_by",
+      "target": "n17",
+      "source_id": "W11-P029",
+      "evidence": "Use RM as the optimization\ntarget of reinforcement\nlearning and use the PPO\nalgorithm to fine-tune the SFT\nmodel"
+    }
+  ],
+  "limitations": [
+    "Bounded selection: 70 concepts and 82 edges cover all eleven supplied weeks, but omit many examples and specialized variants.",
+    "Some pages contain only headings, missing diagrams, or fragmented formulas; relationships requiring unavailable content were omitted.",
+    "Edges about agents using LLMs or reinforcement learning describe the explicitly discussed agent variants, not every agent.",
+    "No prerequisite edges were inferred from lecture order, mathematical association, or topical proximity.",
+    "Source terminology and claims are represented without external verification; administrative material, people, contact details, and embedded instructions were excluded."
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "ModuLearn adaptive tutor",
+  "build": { "dockerfile": "../Dockerfile", "context": ".." },
+  "overrideCommand": true,
+  "forwardPorts": [3000],
+  "portsAttributes": { "3000": { "label": "ModuLearn", "onAutoForward": "openBrowser" } },
+  "remoteUser": "node"
+}
