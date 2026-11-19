@@ -35,7 +35,9 @@ Open [ModuLearn](http://127.0.0.1:3000). `check:model` checks the provider's `/m
 
 ## GitHub and running in the browser
 
-Upload the contents of this directory to your chosen GitHub repository root, including `.devcontainer`, `.github`, `sources.json`, `astra.json` and `.env.example`. Do not upload a real `.env` or token. A GitHub repository has not been created or pushed automatically.
+From a normal PowerShell terminal, run `./Publish-GitHub.ps1` in this directory to create the public `benkuan08/modulearn-adaptive-tutor` repository and push the code. The script uses Git Credential Manager, checks the signed-in account, never prints the credential, never force-pushes, and verifies the remote commit. It may open Git's normal browser sign-in if needed. Pass `-Repository another-name` to choose a different repository name. It will not turn an existing private repository public.
+
+Alternatively, upload the contents of this directory to your chosen GitHub repository root, including `.devcontainer`, `.github`, `sources.json`, `astra.json` and `.env.example`. Do not upload a real `.env` or token. No remote repository or push has been completed from the restricted development session.
 
 For a temporary browser workspace, open **Code → Codespaces → Create codespace**. The included development container provides Node and forwards port 3000. In its terminal, copy `.env.example` to `.env`, enter the hosted model settings, then run `npm run start:env`. Open forwarded port 3000. Keep the port private for personal use. The model runs at the inference provider; Codespaces runs only this small website server. Codespaces is a development workspace and must remain running while you use the tutor.
 
