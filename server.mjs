@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import { createTutor, problem } from './tutor.mjs';
 import { hostedGenerator, modelSettings } from './model.mjs';
+import { createSourceDigester } from './context.mjs';
 
 const assets = new Map([
   ['/', ['index.html', 'text/html']], ['/app.js', ['app.js', 'text/javascript']],
@@ -91,7 +92,9 @@ if (process.argv[1] && pathToFileURL(process.argv[1]).href === import.meta.url) 
   const key = useGemini ? process.env.GEMINI_API_KEY?.trim() : settings.key;
   const model = useGemini ? process.env.GEMINI_MODEL?.trim() || 'gemini-3.8-flash' : settings.model;
   const generate = useGemini ? geminiGenerator({ key, model }) : hostedGenerator(settings);
-  const tutor = createTutor({ graph, corpus, generate });
+  const digester = settings.compactContext ? createSourceDigester({ generate, cacheDir: process.env.LLM_DIGEST_CACHE_DIR,
+    model: model + '@' + (process.env.LLM_MODEL_REVISION || 'provider-default') }) : undefined;
+  const tutor = createTutor({ graph, corpus, generate, digester });
   http.createServer(createHandler({ tutor, configured: Boolean(key && (useGemini || settings.baseUrl)), model }))
     .listen(Number(process.env.PORT ?? 3000), process.env.HOST ?? '127.0.0.1', () => console.log(`ModuLearn ready at http://127.0.0.1:${process.env.PORT ?? 3000}`));
 }

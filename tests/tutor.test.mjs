@@ -104,7 +104,7 @@ test('hosted model parses fenced JSON, requests one repair, and withholds incomp
   const incomplete = hostedGenerator({ key: 'FAKE', baseUrl: 'https://provider.invalid/v1', model: 'test', fetchImpl: async () => ({ ok: true, json: async () => ({ choices: [{ finish_reason: 'length', message: { content: '{"question":"partial"}' } }] }) }) });
   await assert.rejects(incomplete('Ask', {}, schema), /did not finish/);
   await assert.rejects(hostedGenerator({})('Ask', {}, schema), /No model download/);
-  assert.equal(modelSettings({}).model, 'google/gemma-4-12B-it');
+  assert.equal(modelSettings({}).model, 'google/gemma-4-E2B-it');
 });
 test('HTTP routes serve sources, reject malformed input, and keep tokens private', async () => {
   const tutor = createTutor({ graph, corpus, generate: hostedGenerator({}) });

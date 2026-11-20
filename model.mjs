@@ -37,7 +37,8 @@ function matches(value, schema) {
 export function modelSettings(env = process.env) {
   return { provider: env.LLM_PROVIDER || 'openai', key: env.LLM_API_KEY?.trim() || env.DEEPINFRA_API_KEY?.trim() || env.HF_TOKEN?.trim() || env.OPENAI_API_KEY?.trim(),
     baseUrl: (env.LLM_BASE_URL || env.OPENAI_BASE_URL || '').trim().replace(/\/+$/, ''),
-    model: env.LLM_MODEL || 'google/gemma-4-12B-it', maxTokens: Math.max(2048, Math.min(32768, Number(env.LLM_MAX_TOKENS) || 8192)),
+    model: env.LLM_MODEL || 'google/gemma-4-E2B-it', maxTokens: Math.max(2048, Math.min(32768, Number(env.LLM_MAX_TOKENS) || 4096)),
+    compactContext: env.LLM_COMPACT_CONTEXT === 'true',
     timeoutMs: Math.max(30, Math.min(1800, Number(env.LLM_TIMEOUT_SECONDS) || 90)) * 1000,
     jsonMode: env.LLM_JSON_MODE === 'true', extraBody: env.LLM_EXTRA_BODY ? JSON.parse(env.LLM_EXTRA_BODY) : {} };
 }
@@ -63,7 +64,7 @@ export function hostedGenerator({ key, baseUrl, model, maxTokens = 8192, timeout
           403: 'The server token cannot access this model. Check inference permissions.', 404: 'This model or endpoint is unavailable. Check LLM_MODEL and LLM_BASE_URL.',
           413: 'The model context budget is too small for this course request. Check the notebook or provider settings; no input was truncated.',
           429: 'The model provider is over its rate or quota limit. Try again shortly.',
-          507: 'The Colab GPU ran out of memory for this context. Check its model log and select a GPU with more memory or a hosted endpoint.' };
+          507: 'The Colab GPU ran out of memory for this context. Check its model log, reduce request size, or use a smaller model.' };
         throw problem(response.status === 429 ? 429 : 502, errors[response.status] ?? 'The model provider is unavailable. Your work is preserved.');
       }
       let choice;

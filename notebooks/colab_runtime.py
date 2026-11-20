@@ -75,11 +75,12 @@ class ColabRuntime:
         name = torch.cuda.get_device_name(0)
         total = torch.cuda.get_device_properties(0).total_memory / 2**30
         print(f'Colab GPU: {name}, {total:.1f} GiB total memory.')
-        if total < 20:
-            raise RuntimeError('Select L4/A100 for the full-syllabus Gemma 12B runner, or choose hosted mode. T4 is not supported by this launcher.')
+        if total < 12:
+            raise RuntimeError('Select a T4 GPU runtime or choose hosted mode. This launcher uses CUDA, not TPU.')
         if not Path(self.python).is_file():
             subprocess.run([sys.executable, '-m', 'venv', '--system-site-packages', '--without-pip', str(self.workspace / 'venv')], check=True)
         subprocess.run([sys.executable, '-m', 'pip', '--python', self.python, 'install', '--no-input', '-r', str(self.project / 'notebooks/requirements-colab.txt')], check=True)
+        subprocess.run([self.python, '-m', 'unittest', 'discover', '-s', 'tests', '-p', 'test_model_service.py'], cwd=self.project, check=True)
         print('GPU service dependencies installed. The model loads in the next cell.')
 
     def _start(self, command, port, ready_path, env, name, timeout):
@@ -115,8 +116,8 @@ class ColabRuntime:
             raise RuntimeError('The loaded model did not complete the short JSON inference check. Check its log before opening the tutor.')
         print('Gemma completed a short JSON inference check. Course assessment quality still needs review.')
 
-    def start(self, mode, model_id='google/gemma-4-12B-it', revision='main', quantization='nf4',
-              context_tokens=131072, hosted_url='', hosted_key='', hf_token=''):
+    def start(self, mode, model_id='google/gemma-4-E2B-it', revision='main', quantization='nf4',
+              context_tokens=16384, hosted_url='', hosted_key='', hf_token='', compact_context=True):
         self.stop()
         env = dict(os.environ, PATH=str(Path(self.node).parent) + os.pathsep + os.environ.get('PATH', ''),
                    PYTHONUNBUFFERED='1', TOKENIZERS_PARALLELISM='false', HF_HOME=str(self.workspace / 'huggingface'))
@@ -133,7 +134,7 @@ class ColabRuntime:
                 if not re.fullmatch(r'[a-f0-9]{40,64}', pinned):
                     raise RuntimeError('Could not resolve the model revision.')
                 env.update(MODEL_SERVICE_TOKEN=secret, MODEL_ID=model_id, MODEL_REVISION=pinned,
-                           MODEL_QUANTIZATION=quantization, MAX_CONTEXT_TOKENS=str(context_tokens))
+                           MODEL_QUANTIZATION=quantization, MAX_CONTEXT_TOKENS=str(context_tokens), LLM_MODEL_REVISION=pinned)
                 print(f'Loading {model_id} at {pinned}. Weights download only into this Colab runtime.')
                 self._start([self.python, '-m', 'uvicorn', 'notebooks.gemma_service:app', '--host', '127.0.0.1', '--port', '8100'],
                             8100, '/health', env, 'gemma-model', 1800)
@@ -146,7 +147,8 @@ class ColabRuntime:
             else:
                 raise ValueError('Choose colab_gpu or hosted mode.')
             env.update(LLM_PROVIDER='openai', LLM_MODEL=model_id, LLM_BASE_URL=base_url, LLM_API_KEY=key,
-                       LLM_TIMEOUT_SECONDS='1200', LLM_MAX_TOKENS='8192', LLM_JSON_MODE='false', LLM_EXTRA_BODY='{}',
+                       LLM_TIMEOUT_SECONDS='1200', LLM_MAX_TOKENS='4096', LLM_JSON_MODE='false', LLM_EXTRA_BODY='{"temperature":0}',
+                       LLM_COMPACT_CONTEXT=str(compact_context).lower(), LLM_DIGEST_CACHE_DIR=str(self.workspace / 'source-digests'),
                        HOST='127.0.0.1', PORT='3000')
             status = self._start([self.node, 'server.mjs'], 3000, '/api/status', env, 'modulearn-web', 60)
             if not status.get('configured'):

@@ -24,7 +24,7 @@ class Completion(BaseModel):
     model_config = ConfigDict(extra='forbid')
     model: str
     messages: list[Message] = Field(min_length=1, max_length=8)
-    max_tokens: int = Field(default=8192, ge=1, le=32768)
+    max_tokens: int = Field(default=4096, ge=1, le=32768)
     stream: Literal[False] = False
     temperature: float = Field(default=1.0, ge=0, le=2)
     top_p: float = Field(default=0.95, gt=0, le=1)
@@ -39,7 +39,8 @@ def token_ids(value):
 @asynccontextmanager
 async def lifespan(app):
     import torch
-    from transformers import AutoModelForMultimodalLM, AutoProcessor, BitsAndBytesConfig
+    from transformers import (AutoConfig, AutoModelForCausalLM, AutoModelForImageTextToText,
+                              AutoProcessor, AutoTokenizer, BitsAndBytesConfig, Gemma4ForCausalLM)
 
     token = os.environ.get('MODEL_SERVICE_TOKEN', '')
     if not token:
@@ -47,32 +48,53 @@ async def lifespan(app):
     if not torch.cuda.is_available():
         raise RuntimeError('Select a GPU runtime in Colab, or choose hosted mode.')
     total = torch.cuda.get_device_properties(0).total_memory
-    if total < 20 * 2**30:
-        raise RuntimeError('The full-syllabus Gemma 12B runner requires at least 20 GiB of GPU memory. Choose L4/A100 or hosted mode; T4 is not supported by this launcher.')
-    model_id = os.environ.get('MODEL_ID', 'google/gemma-4-12B-it')
+    if total < 12 * 2**30:
+        raise RuntimeError('Select a T4 GPU runtime (about 15 GiB usable VRAM) or hosted mode.')
+    model_id = os.environ.get('MODEL_ID', 'google/gemma-4-E2B-it')
     revision = os.environ.get('MODEL_REVISION', 'main')
     quantization = os.environ.get('MODEL_QUANTIZATION', 'nf4')
-    dtype = torch.bfloat16 if torch.cuda.get_device_capability(0)[0] >= 8 else torch.float16
+    # T4 has no native BF16. Keep non-quantized layers and NF4 arithmetic in
+    # FP32 there; do not force Gemma's BF16-trained weights into FP16.
+    dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float32
     options = {'revision': revision, 'device_map': {'': 0}, 'dtype': dtype, 'attn_implementation': 'sdpa'}
     if quantization == 'nf4':
         options['quantization_config'] = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type='nf4',
                                                            bnb_4bit_use_double_quant=True, bnb_4bit_compute_dtype=dtype)
-    elif quantization != 'bf16':
-        raise RuntimeError('MODEL_QUANTIZATION must be nf4 or bf16.')
-    processor = AutoProcessor.from_pretrained(model_id, revision=revision)
-    model = AutoModelForMultimodalLM.from_pretrained(model_id, **options)
+    elif quantization == 'fp32':
+        options['dtype'] = torch.float32
+    elif quantization == 'bf16':
+        if not torch.cuda.is_bf16_supported():
+            raise RuntimeError('BF16 requires a newer GPU. Use fp32 or nf4 on T4.')
+        options['dtype'] = torch.bfloat16
+    else:
+        raise RuntimeError('MODEL_QUANTIZATION must be fp32, nf4 or bf16.')
+    config = AutoConfig.from_pretrained(model_id, revision=revision)
+    is_gemma4 = config.model_type in {'gemma4', 'gemma4_text'}
+    is_multimodal = hasattr(config, 'text_config') and not is_gemma4
+    processor = (AutoProcessor if is_multimodal else AutoTokenizer).from_pretrained(model_id, revision=revision)
+    # The tutor consumes extracted text. This supported loader reads the same
+    # checkpoint's language weights without allocating its vision/audio towers.
+    loader = Gemma4ForCausalLM if is_gemma4 else (AutoModelForImageTextToText if is_multimodal else AutoModelForCausalLM)
+    model = loader.from_pretrained(model_id, **options)
     model.eval()
     text_config = getattr(model.config, 'text_config', model.config)
     model_limit = getattr(text_config, 'max_position_embeddings', 262144)
-    app.state.context = min(int(os.environ.get('MAX_CONTEXT_TOKENS', '131072')), model_limit)
+    requested_context = int(os.environ.get('MAX_CONTEXT_TOKENS', '16384'))
+    if requested_context < 1:
+        raise RuntimeError('MAX_CONTEXT_TOKENS must be a positive integer.')
+    app.state.context = min(requested_context, model_limit)
     app.state.model_id, app.state.token = model_id, token
     app.state.model, app.state.processor = model, processor
     app.state.torch, app.state.lock = torch, threading.Lock()
-    app.state.end_tokens = token_ids(model.generation_config.eos_token_id) | token_ids(processor.tokenizer.eos_token_id) | token_ids(getattr(text_config, 'eos_token_id', None))
-    print(f'Loaded {model_id} at revision {revision} ({quantization}); context budget {app.state.context:,} tokens.', flush=True)
-    yield
-    del app.state.model
-    torch.cuda.empty_cache()
+    tokenizer = getattr(processor, 'tokenizer', processor)
+    app.state.end_tokens = token_ids(model.generation_config.eos_token_id) | token_ids(tokenizer.eos_token_id) | token_ids(getattr(text_config, 'eos_token_id', None))
+    print(f'Loaded {model_id} at revision {revision} ({quantization}, compute {options["dtype"]}); '
+          f'context budget {app.state.context:,} tokens.', flush=True)
+    try:
+        yield
+    finally:
+        del app.state.model
+        torch.cuda.empty_cache()
 
 
 app = FastAPI(title='Private ModuLearn Colab model', lifespan=lifespan)
@@ -108,6 +130,9 @@ def complete(body: Completion, authorization: str = Header(default='')):
             raise HTTPException(413, f'This request needs {prompt_length + body.max_tokens:,} tokens; context budget is {app.state.context:,}. No input was truncated.')
         inputs = inputs.to(app.state.model.device)
         options = {'max_new_tokens': body.max_tokens, 'do_sample': body.temperature > 0}
+        if getattr(app.state.model.config, 'model_type', '') in {'gemma3_text', 'gemma4', 'gemma4_text'}:
+            # Avoid materializing a full prompt-length x vocabulary logits tensor.
+            options['logits_to_keep'] = 1
         if body.temperature > 0:
             options.update(temperature=body.temperature, top_p=body.top_p, top_k=64)
         try:
@@ -119,7 +144,7 @@ def complete(body: Completion, authorization: str = Header(default='')):
             text = processor.decode(generated, skip_special_tokens=True)
         except torch.cuda.OutOfMemoryError:
             torch.cuda.empty_cache()
-            raise HTTPException(507, 'The Colab GPU ran out of memory for this context. Select more GPU memory or use hosted mode. No grade was recorded.') from None
+            raise HTTPException(507, 'The Colab GPU ran out of memory. Reduce MAX_CONTEXT_TOKENS and the request size, or use a smaller model. No grade was recorded.') from None
         return {'id': 'colab-' + str(time.time_ns()), 'object': 'chat.completion', 'created': int(time.time()),
                 'model': app.state.model_id, 'choices': [{'index': 0, 'message': {'role': 'assistant', 'content': text},
                     'finish_reason': 'stop' if stopped else 'length'}],

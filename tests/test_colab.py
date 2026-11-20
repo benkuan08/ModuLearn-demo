@@ -36,7 +36,7 @@ class PreviewTests(unittest.TestCase):
                 self.assertIsNone(cell['execution_count'])
         text = json.dumps(notebook)
         self.assertIn('ModuLearn-demo.git', text)
-        self.assertIn('google/gemma-4-12B-it', text)
+        self.assertIn('google/gemma-4-E2B-it', text)
         self.assertNotIn('C:\\Users', text)
         for file in (ROOT / 'notebooks').glob('*.py'):
             ast.parse(file.read_text(encoding='utf-8'), filename=str(file))
@@ -140,7 +140,7 @@ class PreviewTests(unittest.TestCase):
     def test_gpu_inference_check_requires_the_correct_model_and_complete_json(self):
         with tempfile.TemporaryDirectory() as directory, patch('notebooks.colab_runtime.ensure_node', return_value='/usr/bin/node'):
             runtime = ColabRuntime(ROOT, Path(directory))
-            model = 'google/gemma-4-12B-it'
+            model = 'google/gemma-4-E2B-it'
             result = {'model': model, 'choices': [{'finish_reason': 'stop', 'message': {'content': '{"ready": true}'}}]}
 
             class Client:
@@ -154,6 +154,7 @@ class PreviewTests(unittest.TestCase):
                 result['choices'][0]['finish_reason'] = 'length'
                 with self.assertRaises(RuntimeError):
                     runtime._check_gpu_generation('FAKE', model)
+
 
 
 if __name__ == '__main__':
