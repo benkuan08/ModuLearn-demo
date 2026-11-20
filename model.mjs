@@ -38,11 +38,12 @@ export function modelSettings(env = process.env) {
   return { provider: env.LLM_PROVIDER || 'openai', key: env.LLM_API_KEY?.trim() || env.DEEPINFRA_API_KEY?.trim() || env.HF_TOKEN?.trim() || env.OPENAI_API_KEY?.trim(),
     baseUrl: (env.LLM_BASE_URL || env.OPENAI_BASE_URL || '').trim().replace(/\/+$/, ''),
     model: env.LLM_MODEL || 'google/gemma-4-12B-it', maxTokens: Math.max(2048, Math.min(32768, Number(env.LLM_MAX_TOKENS) || 8192)),
+    timeoutMs: Math.max(30, Math.min(1800, Number(env.LLM_TIMEOUT_SECONDS) || 90)) * 1000,
     jsonMode: env.LLM_JSON_MODE === 'true', extraBody: env.LLM_EXTRA_BODY ? JSON.parse(env.LLM_EXTRA_BODY) : {} };
 }
 
 // Hosted OpenAI-compatible inference. No model weights, Python, or GPU required.
-export function hostedGenerator({ key, baseUrl, model, maxTokens = 8192, jsonMode = false, extraBody = {}, fetchImpl = fetch }) {
+export function hostedGenerator({ key, baseUrl, model, maxTokens = 8192, timeoutMs = 90000, jsonMode = false, extraBody = {}, fetchImpl = fetch }) {
   return async (instruction, input, schema) => {
     if (!key) throw problem(503, 'Set HF_TOKEN or LLM_API_KEY on the server to use the hosted tutor. No model download is required.');
     if (!baseUrl || !/^https?:\/\//.test(baseUrl)) throw problem(503, 'Set LLM_BASE_URL to an OpenAI-compatible provider that serves your selected checkpoint. A model repository URL is not an inference endpoint.');
@@ -54,13 +55,15 @@ export function hostedGenerator({ key, baseUrl, model, maxTokens = 8192, jsonMod
         response = await fetchImpl(baseUrl + '/chat/completions', { method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
           body: JSON.stringify({ ...extraBody, model, messages, max_tokens: maxTokens, stream: false,
-            ...(jsonMode ? { response_format: { type: 'json_object' } } : {}) }), signal: AbortSignal.timeout(90_000) });
+            ...(jsonMode ? { response_format: { type: 'json_object' } } : {}) }), signal: AbortSignal.timeout(timeoutMs) });
       } catch { throw problem(502, 'The hosted model did not respond. Your answer is preserved. Try again.'); }
       if (!response.ok) {
         const errors = { 400: 'The hosted provider rejected the request. Check the model name and optional LLM_EXTRA_BODY/LLM_JSON_MODE settings.',
           401: 'The model provider rejected the server token.', 402: 'The model provider requires available inference credits.',
           403: 'The server token cannot access this model. Check inference permissions.', 404: 'This model or endpoint is unavailable. Check LLM_MODEL and LLM_BASE_URL.',
-          429: 'The model provider is over its rate or quota limit. Try again shortly.' };
+          413: 'The model context budget is too small for this course request. Check the notebook or provider settings; no input was truncated.',
+          429: 'The model provider is over its rate or quota limit. Try again shortly.',
+          507: 'The Colab GPU ran out of memory for this context. Check its model log and select a GPU with more memory or a hosted endpoint.' };
         throw problem(response.status === 429 ? 429 : 502, errors[response.status] ?? 'The model provider is unavailable. Your work is preserved.');
       }
       let choice;

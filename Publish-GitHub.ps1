@@ -1,86 +1,52 @@
 [CmdletBinding()]
 param(
     [ValidatePattern('^[A-Za-z0-9_.-]+$')]
-    [string]$Repository = 'modulearn-adaptive-tutor'
+    [string]$Repository = 'ModuLearn-demo'
 )
 
+# Run git credential-manager github login yourself first if authentication is needed.
+# This pushes an existing repository. No credential parsing or repository API calls.
 $ErrorActionPreference = 'Stop'
-$account = 'benkuan08'
-$project = $PSScriptRoot
-if (-not $project) { throw 'Run this script from its saved project directory.' }
-$remoteUrl = 'https://github.com/' + $account + '/' + $Repository + '.git'
-$credential = @{}
-$headers = @{}
+$branch = 'main'
+$repoUrl = 'https://github.com/benkuan08/' + $Repository + '.git'
 $oldLocation = Get-Location
 
 try {
-    Set-Location -LiteralPath $project
+    Set-Location -LiteralPath $PSScriptRoot
     & git --version
-    if ($LASTEXITCODE -ne 0) { throw 'Git must be installed and available on PATH.' }
-    if (-not (Test-Path -LiteralPath (Join-Path $project '.git'))) {
-        & git init -b main
+    if ($LASTEXITCODE -ne 0) { throw 'Git is not available on PATH.' }
+    if (-not (Test-Path -LiteralPath '.git')) {
+        & git init -b $branch
         if ($LASTEXITCODE -ne 0) { throw 'Git initialization failed.' }
     }
-    & git add -- .
+    & git add -A
     if ($LASTEXITCODE -ne 0) { throw 'Could not stage the project files.' }
-    & git diff --cached --quiet
-    $stagedChanges = $LASTEXITCODE
-    if ($stagedChanges -gt 1) { throw 'Could not inspect staged changes.' }
-    & git rev-parse --verify HEAD 2>$null | Out-Null
-    $hasCommit = $LASTEXITCODE -eq 0
-    if (-not $hasCommit -or $stagedChanges -eq 1) {
-        & git commit -m 'feat: publish syllabus-wide adaptive tutoring demo'
-        if ($LASTEXITCODE -ne 0) { throw 'Commit failed. Check your Git author configuration.' }
+    $status = & git status --porcelain
+    if ($LASTEXITCODE -ne 0) { throw 'Could not inspect the project changes.' }
+    if (-not [string]::IsNullOrWhiteSpace(($status -join "`n"))) {
+        & git commit -m 'feat: add Colab notebook for the syllabus-wide tutor'
+        if ($LASTEXITCODE -ne 0) { throw 'The project commit failed.' }
+    } else {
+        Write-Host 'No changes to commit.'
     }
-
-    # Standard Git credential-helper protocol. Nothing is printed or saved to a file.
-    # Git Credential Manager may ask you to sign in through your normal browser.
-    $request = "protocol=https`nhost=github.com`nusername=$account`n`n"
-    $credentialLines = $request | & git credential fill
-    if ($LASTEXITCODE -ne 0) { throw 'GitHub sign-in was not completed. Sign in with Git Credential Manager and rerun this script.' }
-    foreach ($line in $credentialLines) {
-        if ($line -match '^([^=]+)=(.*)$') { $credential[$Matches[1]] = $Matches[2] }
-    }
-    if (-not $credential.password) { throw 'Git did not provide a GitHub credential.' }
-    $headers = @{
-        Authorization = 'Bearer ' + $credential.password
-        Accept = 'application/vnd.github+json'
-        'User-Agent' = 'ModuLearn-publisher'
-        'X-GitHub-Api-Version' = '2026-03-10'
-    }
-    $signedIn = Invoke-RestMethod -Uri 'https://api.github.com/user' -Headers $headers -TimeoutSec 30
-    if ($signedIn.login -ne $account) { throw ('The credential belongs to ' + $signedIn.login + ', not ' + $account + '. No repository was changed.') }
-
-    $repo = $null
-    try {
-        $repo = Invoke-RestMethod -Uri ('https://api.github.com/repos/' + $account + '/' + $Repository) -Headers $headers -TimeoutSec 30
-    } catch {
-        if (-not $_.Exception.Response -or [int]$_.Exception.Response.StatusCode -ne 404) { throw }
-    }
-    if (-not $repo) {
-        $body = @{ name = $Repository; private = $false; auto_init = $false; description = 'Whole-syllabus assessment and personalized teaching paths for ModuLearn.' } | ConvertTo-Json
-        $repo = Invoke-RestMethod -Method Post -Uri 'https://api.github.com/user/repos' -Headers $headers -ContentType 'application/json' -Body $body -TimeoutSec 30
-        Write-Host ('Created public repository: ' + $repo.html_url)
-    } elseif ($repo.private) {
-        throw 'That name is occupied by a private repository. Choose a different repository name; its existing contents have not been made public.'
-    }
-
-    & git remote get-url origin 2>$null | Out-Null
-    if ($LASTEXITCODE -eq 0) { & git remote set-url origin $remoteUrl }
-    else { & git remote add origin $remoteUrl }
+    & git branch -M $branch
+    if ($LASTEXITCODE -ne 0) { throw 'Could not select the publishing branch.' }
+    $existing = & git remote
+    if ($LASTEXITCODE -ne 0) { throw 'Could not inspect Git remotes.' }
+    if ($existing -contains 'origin') { & git remote set-url origin $repoUrl }
+    else { & git remote add origin $repoUrl }
     if ($LASTEXITCODE -ne 0) { throw 'Could not configure the GitHub remote.' }
-    # Never force-push or overwrite an unrelated repository history.
-    & git push -u origin main
-    if ($LASTEXITCODE -ne 0) { throw 'Push failed. Existing remote history has not been overwritten.' }
+    Write-Host ('Pushing to ' + $repoUrl)
+    & git push -u origin $branch
+    if ($LASTEXITCODE -ne 0) { throw 'Git push failed. No success was reported and no force-push was attempted.' }
     $localCommit = (& git rev-parse HEAD).Trim()
-    $remoteLine = & git ls-remote origin refs/heads/main
-    if ($LASTEXITCODE -ne 0 -or -not $remoteLine -or ($remoteLine -split '\s+')[0] -ne $localCommit) { throw 'Could not verify that GitHub received the local commit.' }
-    Write-Host ('Verified published commit: ' + $localCommit)
-    Write-Host ('Open: ' + $repo.html_url)
-    Write-Host 'For the demo, open Code > Codespaces > Create codespace. Follow README.md for the hosted model endpoint and token.'
+    if ($LASTEXITCODE -ne 0) { throw 'Could not inspect the local commit.' }
+    $remoteLine = & git ls-remote origin ('refs/heads/' + $branch)
+    if ($LASTEXITCODE -ne 0 -or -not $remoteLine -or ($remoteLine -split '\s+')[0] -ne $localCommit) {
+        throw 'The push returned, but the remote commit could not be verified.'
+    }
+    Write-Host ('Verified commit: ' + $localCommit)
+    Write-Host ('Colab: https://colab.research.google.com/github/benkuan08/' + $Repository + '/blob/main/notebooks/modulearn-colab.ipynb')
 } finally {
-    $credential.Clear()
-    $credentialLines = $null
-    $headers.Clear()
     Set-Location -LiteralPath $oldLocation.Path
 }

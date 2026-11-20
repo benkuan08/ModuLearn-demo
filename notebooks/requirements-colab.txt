@@ -1,0 +1,8 @@
+# Colab supplies its CUDA-enabled PyTorch. Keep that installation.
+transformers>=5.23,<6
+accelerate>=1.10,<2
+bitsandbytes>=0.47,<1
+huggingface_hub>=1.0,<2
+safetensors>=0.6,<1
+fastapi>=0.115,<1
+uvicorn>=0.30,<1
