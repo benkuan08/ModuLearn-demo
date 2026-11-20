@@ -48,7 +48,7 @@ class ModelServiceTests(unittest.TestCase):
         transformers = MagicMock()
         transformers.AutoConfig.from_pretrained.return_value = config
         for loader in ['Gemma4ForCausalLM', 'AutoModelForCausalLM', 'AutoModelForImageTextToText']:
-            getattr(transformers, loader).from_pretrained.return_value = model
+            getattr(transformers, loader).from_pretrained.return_value = (model, {'missing_keys': [], 'mismatched_keys': []})
         transformers.AutoTokenizer.from_pretrained.return_value = tokenizer
         transformers.AutoProcessor.from_pretrained.return_value = tokenizer
         with patch.dict('sys.modules', torch=torch, transformers=transformers), patch.dict(
@@ -71,6 +71,8 @@ class ModelServiceTests(unittest.TestCase):
             self.assertEqual(options['dtype'], 'fp32')
             self.assertEqual(options['revision'], 'pinned-revision')
             self.assertEqual(options['device_map'], {'': 0})
+            self.assertEqual(options['key_mapping'], {r'^model\.language_model\.': 'model.'})
+            self.assertTrue(options['output_loading_info'])
             quant = transformers.BitsAndBytesConfig.call_args.kwargs
             self.assertTrue(quant['load_in_4bit'])
             self.assertEqual(quant['bnb_4bit_quant_type'], 'nf4')
@@ -90,6 +92,17 @@ class ModelServiceTests(unittest.TestCase):
             asyncio.run(check())
             self.assertEqual(transformers.Gemma4ForCausalLM.from_pretrained.call_args.kwargs['dtype'], 'bf16')
             self.assertEqual(transformers.BitsAndBytesConfig.call_args.kwargs['bnb_4bit_compute_dtype'], 'bf16')
+
+    def test_missing_checkpoint_weights_never_mark_a_randomly_initialized_model_ready(self):
+        with self.runtime() as (_, transformers, model, _):
+            transformers.Gemma4ForCausalLM.from_pretrained.return_value = (
+                model, {'missing_keys': ['model.per_layer_model_projection.weight'], 'mismatched_keys': []})
+            async def check():
+                async with lifespan(app):
+                    self.fail('A checkpoint with missing text weights cannot start.')
+            with self.assertRaisesRegex(RuntimeError, 'missing or mismatched weights'):
+                asyncio.run(check())
+            model.generate.assert_not_called()
 
     def test_explicit_bf16_is_rejected_on_t4_before_loading_weights(self):
         with self.runtime(MODEL_QUANTIZATION='bf16') as (_, transformers, _, _):

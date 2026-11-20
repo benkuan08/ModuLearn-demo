@@ -36,6 +36,20 @@ def token_ids(value):
     return {value} if isinstance(value, int) else set(value)
 
 
+def load_checkpoint(loader, model_id, *, is_gemma4=False, **options):
+    if is_gemma4:
+        # Google's multimodal checkpoint nests text weights under this prefix.
+        # Without explicit mapping, Transformers 5.23 initializes missing text
+        # parameters instead; their Linear4bit layers have no quant_state.
+        options['key_mapping'] = {r'^model\.language_model\.': 'model.'}
+    model, loading_info = loader.from_pretrained(model_id, output_loading_info=True, **options)
+    if is_gemma4 and (loading_info.get('missing_keys') or loading_info.get('mismatched_keys')):
+        missing = ', '.join(sorted(loading_info.get('missing_keys', []))[:8])
+        raise RuntimeError(f'Gemma text checkpoint has missing or mismatched weights ({missing}). '
+                           'The model was not started; check the checkpoint key mapping.')
+    return model
+
+
 @asynccontextmanager
 async def lifespan(app):
     import torch
@@ -75,7 +89,7 @@ async def lifespan(app):
     # The tutor consumes extracted text. This supported loader reads the same
     # checkpoint's language weights without allocating its vision/audio towers.
     loader = Gemma4ForCausalLM if is_gemma4 else (AutoModelForImageTextToText if is_multimodal else AutoModelForCausalLM)
-    model = loader.from_pretrained(model_id, **options)
+    model = load_checkpoint(loader, model_id, is_gemma4=is_gemma4, **options)
     model.eval()
     text_config = getattr(model.config, 'text_config', model.config)
     model_limit = getattr(text_config, 'max_position_embeddings', 262144)

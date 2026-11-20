@@ -12,6 +12,8 @@ The default is **[`google/gemma-4-E2B-it`](https://huggingface.co/google/gemma-4
 
 E2B denotes effective model size. Its large embedding tables remain unquantized in this loader, so the entire model does not become 4-bit or fit into a claimed 2–3 GB budget. Startup checks a real short JSON generation before opening the tutor, and each request computes only the last-token logits to reduce memory. Source mapping and exact-quotation checks remain enforced, but they do not establish grading accuracy. Review proposals and grades against the original notes. There is no silent model substitution.
 
+The text loader explicitly maps checkpoint keys from `model.language_model.*` to `model.*`. This is required when reading the multimodal checkpoint with `Gemma4ForCausalLM` in Transformers 5.23. Missing or mismatched text weights stop startup; the tutor cannot run on silently initialized replacement weights. Without the mapping, the missing quantized projection weights trigger the first-inference `Linear4bit` assertion. If startup inference fails, the notebook includes the service traceback in its error instead of hiding it behind HTTP 500.
+
 Implementation references: [Hugging Face Gemma 4 text loader](https://huggingface.co/docs/transformers/model_doc/gemma4#transformers.Gemma4ForCausalLM) and [bitsandbytes hardware and NF4 configuration](https://huggingface.co/docs/transformers/quantization/bitsandbytes).
 
 All 435 pages remain in the course pipeline. Compact mode reads them in 23 bounded batches, caches generated planning summaries for retries, and asks for a whole-course module proposal using those summaries and all 70 KG concepts. Batch assignments expand to original page IDs before the full coverage check. Large module note sets also use planning summaries; grading, teaching and follow-up questions receive the original pages cited in their criteria. Summary-based planning can miss details, so structural coverage still needs a semantic review. Compact planning proposes no prerequisites; it does not infer them from lecture order.
@@ -97,10 +99,14 @@ npm test
 python -m unittest discover -s tests -p test_colab.py -v
 # Optional service checks need FastAPI/Pydantic 2 (installed in Colab's model venv):
 python -m unittest discover -s tests -p test_model_service.py -v
+# Optional real-library integration check, with the GPU service dependencies installed:
+python tests/check_nf4_loading.py -v
 ```
 
 Tests use a mock model and cover bounded source batches, summary-cache reuse, page-ID expansion, whole-syllabus input, page and concept coverage, module preparation and resume, cross-module diagnostic transitions, untested-module retention, reviewed prerequisite ordering, evidence isolation, accumulated quotations, application-only evidence, teaching, reassessment, browser persistence and API failures. Hosted-model parsing allows fenced JSON and one schema-repair request, then withholds invalid results. Truncated output is rejected. Mapping validation rejects unsupported IDs and missing criteria. These checks do not establish semantic completeness or substitute for live grading against human-reviewed answers.
 
 Notebook checks also validate all Python cells and helper syntax, the embedded application/launcher JavaScript, concurrent chunked transfers, route restrictions, failure propagation and hosted-mode setup. These CPU checks do not validate Gemma's GPU load, memory budget, response quality, or the live Colab browser session.
+
+The optional NF4 integration check builds a tiny local Gemma checkpoint with multimodal weight names. It reproduces the unmapped first-projection assertion, then verifies that the corrected loader reads the saved embeddings, initializes quantization state for every 4-bit layer, and produces the same generated tokens as an equivalent text checkpoint. It runs on CPU without downloading Google weights; it does not measure T4 memory or teaching quality.
 
 Optional provider controls: `LLM_COMPACT_CONTEXT=true`, `LLM_DIGEST_CACHE_DIR`, `LLM_MAX_TOKENS`, `LLM_TIMEOUT_SECONDS` (90 seconds normally, 1200 in Colab GPU/hosted notebook mode), `LLM_JSON_MODE=true` if supported, and a JSON object in `LLM_EXTRA_BODY` for documented provider-specific parameters. The app has no silent model fallback. To retain the older Gemini connection, set `LLM_PROVIDER=gemini`, `GEMINI_API_KEY` and optionally `GEMINI_MODEL`; OpenAI-compatible inference is the default.

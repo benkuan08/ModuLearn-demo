@@ -155,6 +155,22 @@ class PreviewTests(unittest.TestCase):
                 with self.assertRaises(RuntimeError):
                     runtime._check_gpu_generation('FAKE', model)
 
+    def test_gpu_http_failure_reports_service_traceback_instead_of_hiding_it(self):
+        with tempfile.TemporaryDirectory() as directory, patch('notebooks.colab_runtime.ensure_node', return_value='/usr/bin/node'):
+            runtime = ColabRuntime(ROOT, Path(directory))
+            (Path(directory) / 'gemma-model.log').write_text(
+                'per_layer_model_projection\nAssertionError: quant_state absent\nBearer FAKE\n', encoding='utf-8')
+            client = unittest.mock.Mock()
+            client.open.side_effect = urllib.error.HTTPError(
+                'http://127.0.0.1:8100/v1/chat/completions', 500, 'error', {}, io.BytesIO(b'Internal Server Error'))
+            with patch('notebooks.colab_runtime.urllib.request.build_opener', return_value=client):
+                with self.assertRaises(RuntimeError) as error:
+                    runtime._check_gpu_generation('FAKE', 'google/gemma-4-E2B-it')
+                self.assertIn('HTTP 500', str(error.exception))
+                self.assertIn('per_layer_model_projection', str(error.exception))
+                self.assertIn('AssertionError', str(error.exception))
+                self.assertNotIn('FAKE', str(error.exception))
+
 
 
 if __name__ == '__main__':

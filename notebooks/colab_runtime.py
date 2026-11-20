@@ -11,6 +11,7 @@ import subprocess
 import sys
 import tarfile
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -108,8 +109,15 @@ class ColabRuntime:
         request = urllib.request.Request('http://127.0.0.1:8100/v1/chat/completions',
             data=json.dumps(payload).encode(), method='POST', headers={'Content-Type': 'application/json', 'Authorization': 'Bearer ' + secret})
         client = urllib.request.build_opener(urllib.request.ProxyHandler({}))
-        with client.open(request, timeout=180) as response:
-            result = json.load(response)
+        try:
+            with client.open(request, timeout=180) as response:
+                result = json.load(response)
+        except urllib.error.HTTPError as error:
+            detail = error.read(4096).decode('utf-8', errors='replace')
+            logfile = self.workspace / 'gemma-model.log'
+            tail = '\n'.join(logfile.read_text(encoding='utf-8', errors='replace').splitlines()[-80:]) if logfile.is_file() else ''
+            diagnostic = f'The model loaded, but its first inference check failed (HTTP {error.code}).\n{detail}\n{tail}'
+            raise RuntimeError(diagnostic.replace(secret, '[redacted]')) from None
         choice = result.get('choices', [{}])[0]
         match = re.search(r'\{[^{}]*\}', choice.get('message', {}).get('content', ''))
         if result.get('model') != model_id or choice.get('finish_reason') != 'stop' or not match or json.loads(match.group()).get('ready') is not True:
