@@ -18,6 +18,8 @@ Implementation references: [Hugging Face Gemma 4 text loader](https://huggingfac
 
 All 435 pages remain in the course pipeline. Compact mode reads them in 23 bounded batches, caches generated planning summaries for retries, and asks for a whole-course module proposal using those summaries and all 70 KG concepts. Batch assignments expand to original page IDs before the full coverage check. Large module note sets also use planning summaries; grading, teaching and follow-up questions receive the original pages cited in their criteria. Summary-based planning can miss details, so structural coverage still needs a semantic review. Compact planning proposes no prerequisites; it does not infer them from lecture order.
 
+For this small-model demonstration, each new planning summary requests only 3–5 main topics in about 500 characters, with page IDs. An empty summary or one over the 1,200-character validation limit gets one automatic brief retry. Completed valid summaries from the earlier prompt remain cached. These notes provide a coarse overview for planning; the original pages remain available for criteria, grading and teaching.
+
 ## Run in Google Colab
 
 Open [`notebooks/modulearn-colab.ipynb`](notebooks/modulearn-colab.ipynb), or click **Open in Colab** above.
